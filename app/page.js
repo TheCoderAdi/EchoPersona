@@ -166,7 +166,7 @@ export default function Home() {
               {
                 name: "Pro",
                 subtitle: "For power users",
-                price: "0.003 ETH",
+                price: "0.005 ETH",
                 frequency: "/mo",
                 badge: "RECOMMENDED",
                 features: [
@@ -180,7 +180,7 @@ export default function Home() {
               {
                 name: "Premium",
                 subtitle: "Best value",
-                price: "0.002 ETH",
+                price: "0.003 ETH",
                 frequency: "/mo",
                 features: [
                   "500 messages/day",
