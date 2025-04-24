@@ -20,9 +20,9 @@ export default function AuthLayout({ children }) {
                 Authorization: `Bearer ${token}`
             }
         }).then((res) => {
-            if (res.status === 200) {
-                router.push('/dashboard');
-            }
+            // if (res.status === 200) {
+            //     router.push('/dashboard');
+            // }
         }).catch((err) => {
             console.log(err);
             router.push('/auth');
