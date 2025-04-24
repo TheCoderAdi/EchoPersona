@@ -36,13 +36,13 @@ export default function Sidebar() {
             <div className="md:hidden fixed top-4 left-4 z-50">
                 <Sheet open={open} onOpenChange={setOpen}>
                     <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-gray-800">
+                        <Button variant="ghost" size="icon" className="text-gray-800 bg-white cursor-pointer">
                             <Menu className="w-6 h-6" />
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className="bg-[#F5F5F5] text-gray-900">
                         <SheetHeader>
-                            <SheetTitle className="text-lg text-gray-800">Navigation</SheetTitle>
+                            <SheetTitle className="text-lg text-gray-800">EchoPersona</SheetTitle>
                         </SheetHeader>
                         <nav className="mt-6 space-y-2">
                             {navLinks.map((link) => (
@@ -50,8 +50,8 @@ export default function Sidebar() {
                                     key={link.name}
                                     href={link.href}
                                     className={`flex items-center px-4 py-2 rounded-md ${pathname === link.href
-                                        ? 'bg-amber-200 text-gray-900 font-medium'
-                                        : 'text-gray-600 hover:bg-amber-100'
+                                        ? 'bg-black text-gray-300 font-medium'
+                                        : 'text-gray-600 hover:bg-black/10'
                                         }`}
                                     onClick={() => setOpen(false)}
                                 >
