@@ -125,3 +125,7 @@
 * {
   scroll-behavior: smooth;
 }
+
+.glow-button {
+  @apply border border-slate-700 bg-slate-800 hover:bg-slate-700 hover:shadow-lg text-green-300 transition;
+}
