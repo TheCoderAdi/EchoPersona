@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@coinbase/onchainkit": "^0.38.8",
     "@coinbase/wallet-sdk": "^3.9.3",
     "@nivo/pie": "^0.89.1",
     "@radix-ui/react-checkbox": "^1.1.4",
@@ -19,6 +20,7 @@
     "@radix-ui/react-switch": "^1.1.3",
     "@radix-ui/react-tabs": "^1.1.8",
     "@tabler/icons-react": "^3.31.0",
+    "@wagmi/chains": "^1.8.0",
     "axios": "^1.8.4",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
