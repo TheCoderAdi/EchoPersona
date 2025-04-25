@@ -9,7 +9,13 @@ import { Label } from '@/components/ui/label'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { ABI } from "@/constants/abi"
-import { Loader2 } from 'lucide-react'
+import { Loader2, UserCircle } from 'lucide-react'
+import {
+    Wallet,
+} from '@coinbase/onchainkit/wallet';
+import {
+    Name,
+} from '@coinbase/onchainkit/identity';
 
 const CONTRACT_ADDRESS = '0x44D3C2F96128d1be60431cA0a062218003ffd100'
 
@@ -117,11 +123,16 @@ export default function BuyPlanPage() {
                 <CardContent className="space-y-6">
                     <div className="flex flex-col items-center gap-2">
                         {walletAddress ? (
-                            <p className="text-sm">Connected Wallet: {walletAddress}</p>
+                            <div className='flex items-center gap-2 bg-black text-white p-3 rounded-md'>
+                                <UserCircle className="w-10 h-10" />
+                                <Name address={walletAddress} />
+                            </div>
                         ) : (
-                            <Button onClick={connectWallet}
-                                className="cursor-pointer"
-                            >Connect Coinbase Wallet</Button>
+                            <Wallet >
+                                <Button onClick={connectWallet}
+                                    className="cursor-pointer"
+                                >Connect Coinbase Wallet</Button>
+                            </Wallet>
                         )}
                     </div>
 
