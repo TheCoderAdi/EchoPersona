@@ -9,11 +9,14 @@ import {
   Bot,
   Sparkles,
   ShoppingBag,
-  MessageSquareHeart
+  MessageSquareHeart,
 } from "lucide-react"
 import Link from "next/link"
 import { ResizeNavbar } from "@/components/Navbar"
 import { IconBrandGithub, IconBrandLinkedin } from "@tabler/icons-react"
+import { useEffect } from "react"
+import axios from "axios"
+import { useRouter } from "next/navigation"
 
 const fadeIn = {
   hidden: { opacity: 0, y: 40 },
@@ -21,6 +24,30 @@ const fadeIn = {
 }
 
 export default function Home() {
+  const Router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("proxy-token")
+    const user_id = localStorage.getItem("proxy-user_id")
+
+    if (!token || !user_id) return;
+
+    const fetchUser = async () => {
+      const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/current-user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (data.user_id) {
+        Router.push("/dashboard")
+      }
+    }
+
+    fetchUser()
+
+  }, [Router])
+
   return (
     <>
       <main className="relative flex flex-col items-center justify-center px-4 md:px-12 max-w-7xl mx-auto space-y-24">
