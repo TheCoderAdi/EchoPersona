@@ -20,10 +20,10 @@
     "@radix-ui/react-tabs": "^1.1.8",
     "@tabler/icons-react": "^3.31.0",
     "axios": "^1.8.4",
+    "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "ethers": "^6.13.5",
-    "howler": "^2.2.4",
     "lucide-react": "^0.487.0",
     "motion": "^12.7.4",
     "next": "15.2.4",
@@ -31,7 +31,8 @@
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",
     "tailwind-merge": "^3.2.0",
-    "tw-animate-css": "^1.2.5"
+    "tw-animate-css": "^1.2.5",
+    "use-sound": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
