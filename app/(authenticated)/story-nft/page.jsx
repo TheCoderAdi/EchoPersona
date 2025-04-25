@@ -127,7 +127,7 @@ export default function StoryNFTPage() {
                                     View on IPFS
                                 </a>
                                 <p className="text-sm text-muted-foreground">
-                                    <strong>Tx Hash:</strong> {result.nft_metadata.tx_hash}
+                                    <strong>Tx Hash:</strong> 0x{result.nft_metadata.tx_hash}
                                 </p>
                             </CardContent>
                         </Card>
