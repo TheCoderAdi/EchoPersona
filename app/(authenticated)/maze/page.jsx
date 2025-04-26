@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import confetti from 'canvas-confetti';
 import useSound from 'use-sound';
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Info } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Info, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
     Dialog,
@@ -35,6 +35,12 @@ export default function EchoMazeGame() {
     const [pathDir, setPathDir] = useState([]);
     const [guessPath, setGuessPath] = useState([{ x: 200, y: 200 }]);
     const [guessDir, setGuessDir] = useState([]);
+    const [socket, setSocket] = useState(null);
+    const [creating, setCreating] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isRevealing, setRevealing] = useState(false);
+    const [reveled, setReveled] = useState(false);
+    const [announcing, setAnnouncing] = useState(false);
 
     const [isPlayerA, setIsPlayerA] = useState(false);
     const [duelId, setDuelId] = useState('');
@@ -43,6 +49,7 @@ export default function EchoMazeGame() {
     const [winner, setWinner] = useState('');
 
     const [playMove] = useSound('/sounds/move.wav');
+    const [win] = useSound('/sounds/win.mp3');
 
     const currentPath = isPlayerA ? path : guessPath;
     const setCurrentPath = isPlayerA ? setPath : setGuessPath;
@@ -114,17 +121,13 @@ export default function EchoMazeGame() {
         drawPath();
     }, [path, guessPath]);
 
-    useEffect(() => {
-        if (winner) {
-            confetti({ particleCount: 300, spread: 100, origin: { y: 0.7, x: 0.59 } });
-        }
-    }, [winner]);
-
     const createDuel = async () => {
         if (!pathDir.length) return toast.error("Please make a path first!");
         try {
+            setCreating(true);
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/duel/create`, {
                 path: pathDir,
+                user_id: localStorage.getItem('proxy-user_id'),
             });
             const id = res.data.duel_id.toString();
             setDuelId(id);
@@ -132,6 +135,8 @@ export default function EchoMazeGame() {
             toast.success("Duel created!");
         } catch (err) {
             setMessage('❌ Failed to create duel.');
+        } finally {
+            setCreating(false);
         }
     };
 
@@ -140,45 +145,44 @@ export default function EchoMazeGame() {
         setDuelId(duelInput);
         setIsPlayerA(false);
         setMessage(`🚀 Joined Duel ID: ${duelInput}. Enter your guess!`);
+        toast.success("Joined duel!");
     };
 
     const submitGuess = async () => {
         if (!duelId) return toast.error("Please enter a duel ID first!");
         if (!guessDir.length) return toast.error("Please make a guess first!");
         try {
+            setIsSubmitting(true);
             await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/duel/submit`, {
                 duel_id: parseInt(duelId),
                 path: guessDir,
             });
             setMessage('✅ Guess submitted!');
+            toast.success("Guess submitted!");
         } catch (err) {
             setMessage('❌ Failed to submit guess.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const revealMaze = async () => {
+        if (!duelId) return toast.error("Please enter a duel ID first!");
+        if (!pathDir.length) return toast.error("Please create a path first!");
         try {
+            setRevealing(true);
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/duel/reveal`, {
                 duel_id: parseInt(duelId),
                 path: pathDir,
             });
-            setMessage(`🧩 Maze revealed! TX: ${res.data.tx_hash}`);
-            pollForWinner(duelId);
+            setMessage(`🧩 Maze revealed! TX: 0x${res.data.tx_hash}`);
+            toast.success("Maze revealed!");
+            setRevealing(false);
+            setReveled(true)
         } catch (err) {
             setMessage('❌ Failed to reveal maze.');
+            setReveled(false);
         }
-    };
-
-    const pollForWinner = (id) => {
-        const intervalId = setInterval(async () => {
-            try {
-                const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/duel/winner/${id}`);
-                if (res.data.winner) {
-                    setWinner(res.data.winner);
-                    clearInterval(intervalId);
-                }
-            } catch { }
-        }, 5000);
     };
 
     const reset = () => {
@@ -189,9 +193,69 @@ export default function EchoMazeGame() {
         setDuelId('');
         setDuelInput('');
         setMessage('');
-        setIsPlayerA(true);
+        setIsPlayerA(false);
         setWinner('');
+        if (socket) {
+            socket.close();
+            setSocket(null);
+        }
+        setReveled(false);
+        setAnnouncing(false);
     };
+
+    const announceWinner = async () => {
+        if (!duelId) return toast.error("Please enter a duel ID first!");
+        if (!reveled) return toast.error("Please reveal the maze first!");
+        try {
+            setAnnouncing(true);
+            await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/duel/winner/${duelId}`);
+        } catch (err) {
+            setMessage('❌ Failed to announce winner.');
+        } finally {
+            setAnnouncing(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!duelId) return;
+
+        const wsProtocol = process.env.NEXT_PUBLIC_BACKEND_URL.startsWith('https') ? 'wss' : 'ws';
+        const wsUrl = process.env.NEXT_PUBLIC_BACKEND_URL.replace(/^https?/, wsProtocol);
+        const ws = new WebSocket(`${wsUrl}/api/duel/ws/${duelId}`);
+        setSocket(ws);
+
+        ws.onopen = () => {
+            console.log("✅ WebSocket connected");
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+
+            console.log(data)
+            console.log(event)
+            if (data.winner) {
+                setWinner(data.winner);
+                confetti({ particleCount: 300, spread: 100, origin: { y: 0.7, x: 0.59 } });
+                win();
+                toast.success(`🏆 Winner is ${data.winner}!`);
+            }
+        };
+
+        ws.onclose = () => {
+            console.log("❌ WebSocket disconnected");
+        };
+
+        ws.onerror = (error) => {
+            console.error("⚠️ WebSocket error:", error);
+        };
+
+        return () => {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.close();
+            }
+        };
+    }, [duelId]);
+
 
     return (
         <div className="p-4 space-y-4">
@@ -276,14 +340,26 @@ export default function EchoMazeGame() {
 
             <div className="space-x-2">
                 {isPlayerA && pathDir.length === MAX_STEPS && !duelId && (
-                    <Button className="cursor-pointer" onClick={createDuel}>Create Duel</Button>
+                    <Button className="cursor-pointer" onClick={createDuel}>
+                        {creating ? <Loader2 className="animate-spin" /> : "Create Duel"}
+                    </Button>
                 )}
                 {!isPlayerA && guessDir.length === MAX_STEPS && (
-                    <Button className="cursor-pointer" onClick={submitGuess}>Submit Guess</Button>
+                    <Button className="cursor-pointer" onClick={submitGuess}>
+                        {isSubmitting ? <Loader2 className="animate-spin" /> : "Submit Guess"}
+                    </Button>
                 )}
                 {isPlayerA && duelId && pathDir.length === MAX_STEPS && (
-                    <Button className="cursor-pointer" onClick={revealMaze}>Reveal Maze</Button>
+                    <Button className="cursor-pointer" onClick={revealMaze} disabled={reveled}>
+                        {isRevealing ? <Loader2 className="animate-spin" /> : "Reveal Maze"}
+                    </Button>
                 )}
+                {isPlayerA && reveled && (
+                    <Button className="cursor-pointer" onClick={announceWinner}>
+                        {announcing ? <Loader2 className="animate-spin" /> : "Announce Winner"}
+                    </Button>
+                )
+                }
                 <Button className="cursor-pointer" variant="outline" onClick={reset}>Reset</Button>
             </div>
             {message && <div className="text-green-500">{message}</div>}
