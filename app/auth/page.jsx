@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
 export default function LoginPage() {
@@ -119,7 +119,13 @@ export default function LoginPage() {
             </div>
           </div>
           <Button className="cursor-pointer w-full" onClick={handleSubmit}>
-            {isLogin ? loading ? 'Logging in...' : 'Login' : loading ? 'Signing up...' : 'Sign Up'}
+            {loading ? (
+              <Loader2 className="animate-spin mr-2 h-4 w-4" />
+            ) : isLogin ? (
+              'Login'
+            ) : (
+              'Sign Up'
+            )}
           </Button>
           <p className="text-center text-sm text-gray-600">
             {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
