@@ -41,11 +41,34 @@ export default function ChatPage() {
                 headers: { 'Content-Type': 'application/json' },
             });
 
-            const data = await res.json();
-            setMessages((prev) => [
+            if (!res.body) {
+                throw new Error('No response body');
+            }
+
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let fullResponse = '';
+            setMessages(prev => [
                 ...prev,
-                { sender: 'bot', content: data.response, timestamp: new Date() },
+                { sender: 'bot', content: '', timestamp: new Date() }
             ]);
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                const chunk = decoder.decode(value, { stream: true });
+
+                fullResponse += chunk;
+
+                setMessages(prev => {
+                    const updated = [...prev];
+                    const lastIndex = updated.length - 1;
+                    if (updated[lastIndex]?.sender === 'bot') {
+                        updated[lastIndex].content += chunk;
+                    }
+                    return updated;
+                });
+            }
+
         } catch {
             setMessages((prev) => [
                 ...prev,
