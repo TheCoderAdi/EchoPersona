@@ -135,7 +135,7 @@ Highlighting the most important features of **EchoPersona**, your intelligent se
   - ![ezgif-232d16cfc9aa7e](https://github.com/user-attachments/assets/f1ee57d6-ebc8-4900-b527-43e2246be072)
   
 - Draft email screen
-  - ![ezgif-54c18a9bf3aab1 mp4-poster](https://github.com/user-attachments/assets/2223cdc9-0286-4551-942a-715bd1b31892)
+  - ![ezgif-4e8e47c54a717b](https://github.com/user-attachments/assets/32c400ae-42ba-4f5f-9b21-8da483068699)
 
 - Shopping suggestions
   - ![ezgif-5de4199b0c6a35](https://github.com/user-attachments/assets/cd35035f-396d-431c-b8a2-e5336f236434)
@@ -144,8 +144,8 @@ Highlighting the most important features of **EchoPersona**, your intelligent se
 
 ## 📽️ Demo & Deliverables
 
-- **Demo Video Link:** [Paste YouTube or Loom link here]
-- **Pitch Deck / PPT Link:** [Paste Google Slides / PDF link here]
+- **Demo Video Link:** https://youtu.be/ARLEcCTMl5E
+- **Pitch Deck / PPT Link:** https://1drv.ms/p/c/b68c14dd441fad9d/ETrTgbVJujBLmxdvj8t9n20BhvpLFQMZ0xNxL2ht9yLVjg?e=x5Hmio&nav=eyJzSWQiOjI1N30
 
 ---
 
@@ -161,7 +161,7 @@ _(Mark with ✅ if completed)_
 
 ## 🧪 How to Run the Project
 
-There is 2 Repos.This is the frontend repo.
+There are 2 Repos.This is the frontend repo.
 
 > Access the backend repo https://github.com/TheCoderAdi/EchoPersona-Backend
 
