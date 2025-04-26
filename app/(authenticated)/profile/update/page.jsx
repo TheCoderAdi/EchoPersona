@@ -11,6 +11,8 @@ import {
     TabsList,
     TabsTrigger,
 } from '@/components/ui/tabs'
+import toast from 'react-hot-toast'
+import { Loader2 } from 'lucide-react'
 
 export default function UpdateProfilePage() {
     const [profile, setProfile] = useState(null)
@@ -65,7 +67,7 @@ export default function UpdateProfilePage() {
             })
 
             if (Object.keys(updatedFields).length === 0) {
-                console.log('No fields updated')
+                toast.error('No fields updated')
                 return
             }
 
@@ -166,7 +168,7 @@ export default function UpdateProfilePage() {
                     <Button onClick={handleUpdate} className="w-full cursor-pointer" disabled={!profile || updating}>
                         {
                             updating ? (
-                                <span className="animate-pulse">Saving...</span>
+                                <Loader2 className="animate-spin h-4 w-4" />
                             ) : (
                                 'Save Changes'
                             )

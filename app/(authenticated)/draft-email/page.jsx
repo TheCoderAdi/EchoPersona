@@ -10,7 +10,8 @@ import axios from "axios"
 import toast from "react-hot-toast"
 import {
     Copy,
-    Check
+    Check,
+    Loader2
 } from "lucide-react"
 import { IconBrandGmail } from "@tabler/icons-react"
 
@@ -125,7 +126,11 @@ export default function DraftEmailPage() {
                                 disabled={loading}
                                 className="w-full text-white cursor-pointer"
                             >
-                                {loading ? "Generating..." : "Generate Draft"}
+                                {
+                                    loading ?
+                                        <Loader2 className="animate-spin mr-2" /> :
+                                        'Generate Draft'
+                                }
                             </Button>
                         </TabsContent>
 
