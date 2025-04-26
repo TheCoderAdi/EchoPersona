@@ -150,6 +150,7 @@ export default function ChatPage() {
             setMessages(formattedMessages);
         } catch (error) {
             console.log(error)
+            setMessages([]);
         } finally {
             setIsLoading(false);
         }
@@ -162,8 +163,27 @@ export default function ChatPage() {
     return (
         <div className="flex flex-col min-h-screen">
             <header className="p-[.96rem] text-2xl font-bold text-center border-b border-gray-200 shadow">
-                Chat with Your AI Persona 🤖
+                Chat with Your Persona
             </header>
+            {
+                messages && messages.length === 0 && !isLoading ? (
+                    <div className="flex flex-1 items-center justify-center flex-col">
+                        <img
+                            src='/robo.png'
+                            alt='robot'
+                            className='object-contain mt-30'
+                            height={150}
+                            width={150}
+                        />
+                        <h1 className="text-2xl font-bold text-gray-800">
+                            Start a conversation with your AI!
+                        </h1>
+                        <p className="text-gray-500">
+                            Ask anything and get instant responses.
+                        </p>
+                    </div>
+                ) : null
+            }
             <ScrollArea className="flex-1 overflow-y-auto px-4 pt-6">
                 <div className="flex flex-col space-y-4 pb-12">
                     {isLoading ? (
