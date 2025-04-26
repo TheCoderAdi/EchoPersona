@@ -123,11 +123,22 @@ Highlighting the most important features of **EchoPersona**, your intelligent se
 **Add visuals:**
 
 - Chat UI showing auto-replies
+  ![ezgif-256fb04375ec7a](https://github.com/user-attachments/assets/5cdd18e7-c30c-4211-866c-3f2742fc1c27)
+
 - NFT mint success screen
+  - ![ezgif-2d0a95931e73ac](https://github.com/user-attachments/assets/630fe7ee-90cc-4968-8ca6-afc0d6e5dceb)
+
 - Maze game with up/down/left/right buttons
+  - ![ezgif-2bdcd0ee2a10dc](https://github.com/user-attachments/assets/3b573401-a744-46ba-90e8-3215c1a2379f)
+
 - Coinbase wallet connection
+  - ![ezgif-232d16cfc9aa7e](https://github.com/user-attachments/assets/f1ee57d6-ebc8-4900-b527-43e2246be072)
+  
 - Draft email screen
-- Shopping suggestions with dummy checkout
+  - ![ezgif-54c18a9bf3aab1 mp4-poster](https://github.com/user-attachments/assets/2223cdc9-0286-4551-942a-715bd1b31892)
+
+- Shopping suggestions
+  - ![ezgif-5de4199b0c6a35](https://github.com/user-attachments/assets/cd35035f-396d-431c-b8a2-e5336f236434)
 
 ---
 
