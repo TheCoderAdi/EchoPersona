@@ -76,7 +76,7 @@ const DashboardPage = () => {
                                     value: item.count,
                                     color: COLORS[index % COLORS.length],
                                 }))}
-                                margin={{ top: 10, right: 40, bottom: 50, left: 40 }}
+                                margin={{ top: 20, bottom: 40 }}
                                 innerRadius={0.5}
                                 padAngle={0.7}
                                 cornerRadius={3}
