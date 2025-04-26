@@ -237,7 +237,7 @@ export default function EchoMazeGame() {
                 setWinner(data.winner);
                 confetti({ particleCount: 300, spread: 100, origin: { y: 0.7, x: 0.59 } });
                 win();
-                toast.success(`🏆 Winner is ${data.winner}!`);
+                toast.success(`🏆 Winner is ${data.winner.slice(0, 16)}...`);
             }
         };
 
