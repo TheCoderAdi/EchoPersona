@@ -7,6 +7,7 @@ import axios from 'axios';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import toast from 'react-hot-toast';
 
 export default function ShopPage() {
     const [query, setQuery] = useState('');
@@ -22,7 +23,11 @@ export default function ShopPage() {
                 prompt: query,
                 user_id: localStorage.getItem('proxy-user_id')
             });
-            setProducts(res.data.data.products);
+            if (res.data.status_code !== 200) {
+                toast.error(res.data.detail || "Something went wrong");
+            } else {
+                setProducts(res.data.data.products);
+            }
         } catch (err) {
             console.error(err);
         } finally {
