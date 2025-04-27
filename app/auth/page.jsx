@@ -100,6 +100,7 @@ export default function LoginPage() {
     }
     catch (error) {
       console.log(error)
+      toast.error(error.response?.data?.detail || "Something went wrong");
     } finally {
       setLoading(false)
     }
