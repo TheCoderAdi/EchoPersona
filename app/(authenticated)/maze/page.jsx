@@ -129,6 +129,10 @@ export default function EchoMazeGame() {
                 path: pathDir,
                 user_id: localStorage.getItem('proxy-user_id'),
             });
+            if (res.data.status_code !== 200) {
+                toast.error(res.data.detail || "Something went wrong");
+                return;
+            }
             const id = res.data.duel_id.toString();
             setDuelId(id);
             setMessage(`✅ Duel Created! Share ID: ${id}`);
