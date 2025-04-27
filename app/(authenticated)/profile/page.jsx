@@ -4,13 +4,10 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
+import { IconBrandGithub, IconBrandLinkedin } from '@tabler/icons-react'
+import { Globe } from 'lucide-react'
 
 export default function ProfilePage() {
     const [profile, setProfile] = useState(null)
@@ -49,6 +46,22 @@ export default function ProfilePage() {
         </div>
     )
 
+    const renderLinks = (links) => (
+        <div className="flex space-x-4">
+            {links.map((link, index) => (
+                <a
+                    key={index}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-600 hover:text-gray-900"
+                >
+                    {link.icon}
+                </a>
+            ))}
+        </div>
+    )
+
     if (loading)
         return (
             <div className="min-h-screen py-10 px-4 flex justify-center items-center">
@@ -75,7 +88,6 @@ export default function ProfilePage() {
                 </Card>
             </div>
         )
-
 
     return (
         <div className="min-h-screen py-10 px-4 flex justify-center items-center">
@@ -106,7 +118,6 @@ export default function ProfilePage() {
 
                             <TabsContent value="basic"
                                 className="transition-all duration-300 ease-in-out data-[state=inactive]:opacity-0 data-[state=inactive]:translate-y-2 data-[state=active]:opacity-100 data-[state=active]:translate-y-0"
-
                             >
                                 <div className="space-y-4">
                                     {renderSection(
@@ -129,7 +140,33 @@ export default function ProfilePage() {
                             <TabsContent value="professional"
                                 className="transition-all duration-300 ease-in-out data-[state=inactive]:opacity-0 data-[state=inactive]:translate-y-2 data-[state=active]:opacity-100 data-[state=active]:translate-y-0"
                             >
-                                {renderSection(profile.professional || {})}
+                                {profile.professional && Object.keys(profile.professional).length > 0 ? (
+                                    <div className="space-y-4">
+                                        {
+                                            renderSection(
+                                                Object.fromEntries(
+                                                    Object.entries(profile.professional).filter(
+                                                        ([key]) => ['job_title', 'skills', 'experience'].includes(key)
+                                                    )
+                                                )
+                                            )
+                                        }
+                                        <div className="mt-6">
+                                            <h3 className="font-medium text-lg text-gray-700">Social Links</h3>
+                                            {renderLinks([
+                                                { url: profile.professional.linkedin, icon: <IconBrandLinkedin size={24} /> },
+                                                { url: profile.professional.github, icon: <IconBrandGithub size={24} /> },
+                                                { url: profile.professional.website, icon: <Globe size={24} /> }
+                                            ])}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {renderField("Job Title", "Not set")}
+                                        {renderField("Skills", "Not set")}
+                                        {renderField("Experience", "Not set")}
+                                    </div>
+                                )}
                             </TabsContent>
 
                             <TabsContent value="personal"
@@ -140,7 +177,7 @@ export default function ProfilePage() {
                         </Tabs>
                     </CardContent>
                     <CardFooter>
-                        <div className="w-full flex justify-end" >
+                        <div className="w-full flex justify-end">
                             <Button
                                 onClick={() => router.push('/profile/update')}
                                 className="cursor-pointer w-full"
