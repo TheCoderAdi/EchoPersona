@@ -18,13 +18,16 @@ export default function ShopPage() {
     const handleSearch = async () => {
         setLoading(true);
         setLoadingProducts(true);
+        if (!query) return toast.error("Please enter a search query");
+        if (query.length < 3) return toast.error("Please enter at least 3 characters");
         try {
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/shooping`, {
                 prompt: query,
                 user_id: localStorage.getItem('proxy-user_id')
             });
-            if (res.data.status_code !== 200) {
-                toast.error(res.data.detail || "Something went wrong");
+            console.log(res)
+            if (res.data.status === "error") {
+                toast.error(res.data.message.slice(5) || "Something went wrong");
             } else {
                 setProducts(res.data.data.products);
             }
