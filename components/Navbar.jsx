@@ -76,19 +76,17 @@ export function ResizeNavbar() {
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 variant="primary"
                                 className="w-full"
+                                href={"/auth"}
                             >
-                                <Link href={"/auth"}>
-                                    Login
-                                </Link>
+                                Login
                             </NavbarButton>
                             <NavbarButton
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 variant="primary"
                                 className="w-full"
+                                href={"/auth"}
                             >
-                                <Link href={"/auth"}>
-                                    Register
-                                </Link>
+                                Register
                             </NavbarButton>
                         </div>
                     </MobileNavMenu>
