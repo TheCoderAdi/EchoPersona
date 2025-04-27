@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import toast from 'react-hot-toast';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { CloudCog, Eye, EyeOff, Loader2 } from 'lucide-react';
 import axios from 'axios';
+import { useSearchParams } from 'next/navigation';
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,6 +18,50 @@ export default function LoginPage() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isSendVerification, setIsSendVerification] = useState(false);
+
+
+  const handleAuthCheck = (userId, password) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (userId.length < 3) {
+      toast.error("User ID must be at least 3 characters ");
+      return false;
+    } else if (!emailRegex.test(userId)) {
+      toast.error("User ID must be a valid email");
+      return false;
+    } else if (!userId.endsWith('gmail.com')) {
+      toast.error("User ID must be a google email");
+      return false;
+    } else if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return false;
+    } else if (!password.match(/[0-9]/)) {
+      toast.error("Password must contain at least one number");
+      return false;
+    }
+    else if (!password.match(/[a-z]/)) {
+      toast.error("Password must contain at least one lowercase letter");
+      return false;
+    }
+    else if (!password.match(/[A-Z]/)) {
+      toast.error("Password must contain at least one uppercase letter");
+      return false;
+    }
+    else if (!password.match(/[^a-zA-Z0-9]/)) {
+      toast.error("Password must contain at least one special character");
+      return false;
+    }
+    else if (password.includes(userId)) {
+      toast.error("Password must not contain User ID");
+      return false;
+    }
+    else if (password.includes(' ')) {
+      toast.error("Password must not contain spaces");
+      return false;
+    }
+    return true;
+  }
 
   const handleSubmit = async () => {
     if (!userId || !password) {
@@ -24,6 +69,7 @@ export default function LoginPage() {
       return;
     }
 
+    if (handleAuthCheck(userId, password) === false) return;
     try {
       setLoading(true);
       const endpoint = isLogin ? '/login' : '/register';
@@ -48,7 +94,7 @@ export default function LoginPage() {
 
         router.push('/dashboard');
       } else {
-        toast.success("Signup successful, you can now log in");
+        toast.success("Check your email to verify your account(Also check spam folder)");
         setIsLogin(true);
       }
     }
@@ -75,6 +121,16 @@ export default function LoginPage() {
     })
   }, [])
 
+  useEffect(() => {
+    const message = searchParams.get('message');
+    if (message === 'verified') {
+      toast.success("Email successfully verified! 🎉");
+      const url = new URL(window.location.href);
+      url.searchParams.delete('message');
+      window.history.replaceState({}, document.title, url);
+    }
+  }, [searchParams]);
+
 
   return (
     <div className="relative min-h-screen flex items-center justify-center px-4">
@@ -90,53 +146,126 @@ export default function LoginPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label>User ID</Label>
-            <Input
-              className="border-gray-300 text-black"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              placeholder="Enter your username"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Password</Label>
-            <div className="relative">
-              <Input
-                className="border-gray-300 text-black pr-10"
-                type={showPass ? 'text' : 'password'}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-              />
-              <button
-                type="button"
-                className="absolute right-2 top-2 text-xs text-gray-900 cursor-pointer"
-                onClick={() => setShowPass(!showPass)}
+          {isSendVerification ? (
+            <>
+              <div className="space-y-2">
+                <Label>User ID</Label>
+                <Input
+                  className="border-gray-300 text-black"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                  placeholder="Enter your email"
+                />
+              </div>
+              <Button
+                className="cursor-pointer w-full"
+                onClick={async () => {
+                  if (!userId) {
+                    toast.error("Please enter your email");
+                    return;
+                  }
+                  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                  if (!emailRegex.test(userId) || !userId.endsWith('gmail.com')) {
+                    toast.error("Please enter a valid Google email");
+                    return;
+                  }
+                  try {
+                    setLoading(true);
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/send-verification-email`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ user_id: userId.trim() }),
+                    });
+                    const data = await res.json();
+                    if (res.status !== 200) {
+                      toast.error(data.detail || "Something went wrong");
+                      return;
+                    }
+                    setIsSendVerification(false);
+                    toast.success("Verification email sent!");
+                  } catch (error) {
+                    console.error(error);
+                    toast.error("Failed to send verification email");
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
               >
-                {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-            </div>
-          </div>
-          <Button className="cursor-pointer w-full" onClick={handleSubmit}>
-            {loading ? (
-              <Loader2 className="animate-spin mr-2 h-4 w-4" />
-            ) : isLogin ? (
-              'Login'
-            ) : (
-              'Sign Up'
-            )}
-          </Button>
-          <p className="text-center text-sm text-gray-600">
-            {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-            <button
-              className="underline cursor-pointer font-bold text-black"
-              onClick={() => setIsLogin(!isLogin)}
-            >
-              {isLogin ? 'Sign Up' : 'Login'}
-            </button>
-          </p>
+                {loading ? (
+                  <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                ) : (
+                  "Send Verification Email"
+                )}
+              </Button>
+              <p className="text-center text-sm text-gray-600">
+                <button
+                  className="underline cursor-pointer font-bold text-black"
+                  onClick={() => setIsSendVerification(false)}
+                >
+                  Back to Login/Register
+                </button>
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <Label>User ID</Label>
+                <Input
+                  className="border-gray-300 text-black"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                  placeholder="Enter your email"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Password</Label>
+                <div className="relative">
+                  <Input
+                    className="border-gray-300 text-black pr-10"
+                    type={showPass ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-2 top-2 text-xs text-gray-900 cursor-pointer"
+                    onClick={() => setShowPass(!showPass)}
+                  >
+                    {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+              <Button className="cursor-pointer w-full" onClick={handleSubmit}>
+                {loading ? (
+                  <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                ) : isLogin ? (
+                  'Login'
+                ) : (
+                  'Sign Up'
+                )}
+              </Button>
+              <div className="flex flex-col space-y-2">
+                <p className="text-center text-sm text-gray-600">
+                  {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
+                  <button
+                    className="underline cursor-pointer font-bold text-black"
+                    onClick={() => setIsLogin(!isLogin)}
+                  >
+                    {isLogin ? 'Sign Up' : 'Login'}
+                  </button>
+                </p>
+                <button
+                  className="text-xs underline text-center text-gray-500 cursor-pointer"
+                  onClick={() => setIsSendVerification(true)}
+                >
+                  Send Verification Email
+                </button>
+              </div>
+            </>
+          )}
         </CardContent>
+
       </Card>
     </div>
   );
